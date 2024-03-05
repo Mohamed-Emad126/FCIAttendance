@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FCI Attendance</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="priviliged_access">This app must be used by the TA of FCI ZU only to take attendance for the students of the faculty</string>
+    <string name="login_with_google">Login with Google</string>
+    <string name="assigned_subjects">Assigned Subjects</string>
+    <string name="your_assigned_subjects">Your Assigned Subjects</string>
+</resources>
