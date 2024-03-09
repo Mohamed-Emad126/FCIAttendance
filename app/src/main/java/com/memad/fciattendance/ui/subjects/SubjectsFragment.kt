@@ -1,13 +1,12 @@
-package com.memad.fciattendance.ui.login.subjects
+package com.memad.fciattendance.ui.subjects
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,14 +14,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.services.sheets.v4.Sheets
-import com.memad.fciattendance.R
 import com.memad.fciattendance.databinding.FragmentSubjectsBinding
 import com.memad.fciattendance.di.annotations.Scopes
-import com.memad.fciattendance.ui.login.LoginActivity
+import com.memad.fciattendance.ui.attendance.AttendanceActivity
+import com.memad.fciattendance.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,45 +56,48 @@ class SubjectsFragment : Fragment() {
             credential?.selectedAccountName = account.name
         }
         setupObservers()
-        subjectsViewModel.getSubjects(credential!!)
+
+        binding.startButton.setOnClickListener {
+            val intent = Intent(requireContext(), AttendanceActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
 
         return binding.root
     }
 
 
-    private fun setupObservers(){
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                subjectsViewModel.subjectsFlow.collect { subjects ->
-                    subjectsAdapter.submitList(subjects.toMutableList())
-                }
-            }
-        }
+    private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                subjectsViewModel.resultFlow.collect { result ->
-                    when (result) {
-                        is Pair<*, *> -> {
-                            Toast.makeText(
-                                requireContext(),
-                                result.first.toString(),
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            binding.subjectProgress.visibility = View.GONE
-                            binding.subjectCard.visibility = View.VISIBLE
-                        }
-                        else -> {
-                            Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                            credential?.selectedAccountName = null
-                            startActivity(Intent(requireContext(), LoginActivity::class.java))
-                            requireActivity().finish()
+                subjectsViewModel.resultFlow
+                    .collect { result ->
+                        when (result.status) {
+                            Status.SUCCESS -> {
+                                binding.subjectProgress.visibility = View.GONE
+                                binding.subjectCard.visibility = View.VISIBLE
+                                subjectsAdapter.submitList(result.data?.toMutableList())
+                            }
+
+                            Status.ERROR -> {
+                                binding.subjectProgress.visibility = View.GONE
+                                Toast.makeText(
+                                    requireContext(),
+                                    result.msg ?: "An error occurred",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                            Status.LOADING -> {
+                                binding.subjectProgress.visibility = View.VISIBLE
+                                binding.subjectCard.visibility = View.GONE
+                            }
                         }
                     }
-                }
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

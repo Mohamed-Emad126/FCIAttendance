@@ -18,6 +18,13 @@ class SharedPreferencesHelper @Inject constructor(
         }
     }
 
+    fun saveStringSet(key: String, value: Set<String>) {
+        with(sharedPref.edit()) {
+            putStringSet(key, value)
+            apply()
+        }
+    }
+
     fun remove(key: String) {
         with(sharedPref.edit().remove(key)) {
             apply()
@@ -27,5 +34,13 @@ class SharedPreferencesHelper @Inject constructor(
 
     fun read(key: String, defaultValue: String): String? {
         return sharedPref.getString(key, defaultValue)
+    }
+
+    fun readBoolean(key: String): Boolean {
+        return sharedPref.getBoolean(key, false)
+    }
+
+    fun readStringSet(key: String): MutableSet<String>? {
+        return sharedPref.getStringSet(key, mutableSetOf())
     }
 }

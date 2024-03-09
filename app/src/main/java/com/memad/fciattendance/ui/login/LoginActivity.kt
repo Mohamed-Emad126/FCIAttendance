@@ -1,5 +1,6 @@
 package com.memad.fciattendance.ui.login
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import androidx.navigation.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.memad.fciattendance.R
+import com.memad.fciattendance.ui.attendance.AttendanceActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,7 +21,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         val signedInAccount = GoogleSignIn.getLastSignedInAccount(this)
         if (signedInAccount?.account != null) {
-            this.findNavController(R.id.nav_host_fragment).navigate(R.id.action_loginFragment_to_attendanceActivity)
+             // attendance activity
+            val intent = Intent(this, AttendanceActivity::class.java)
+            startActivity(intent)
             finish()
         }
     }

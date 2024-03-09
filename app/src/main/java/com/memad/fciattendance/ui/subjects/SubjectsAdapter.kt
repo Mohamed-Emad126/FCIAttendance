@@ -1,4 +1,4 @@
-package com.memad.fciattendance.ui.login.subjects
+package com.memad.fciattendance.ui.subjects
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.memad.fciattendance.databinding.SubjectItemBinding
+import com.memad.fciattendance.utils.Constants
 import javax.inject.Inject
 
 class SubjectsAdapter @Inject constructor() :
@@ -29,8 +30,14 @@ class SubjectsAdapter @Inject constructor() :
 
 
     override fun onBindViewHolder(holder: SubjectItemViewHolder, position: Int) {
-        holder.itemBinding.subjectName.text = currentList[position].split(" - ")[0]
-        holder.itemBinding.subjectDescription.text = currentList[position].split(" - ")[1]
+        val subject = currentList[position]
+        /*Constants.ARRAY_OF_SUBJECTS.indexOf(subject.trim()).let {
+            holder.itemBinding.subjectName.text = Constants.NAMES_OF_SHEETS[it]
+            holder.itemBinding.subjectDescription.text = Constants.SPREADSHEET_IDs[it]
+        }*/
+        holder.itemBinding.subjectName.text = subject.split(" - ")[0]
+        holder.itemBinding.subjectDescription.text = subject.split(" - ")[1]
+
     }
 
     override fun getItemCount(): Int {

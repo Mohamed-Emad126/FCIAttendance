@@ -4,4 +4,24 @@
     <string name="login_with_google">Login with Google</string>
     <string name="assigned_subjects">Assigned Subjects</string>
     <string name="your_assigned_subjects">Your Assigned Subjects</string>
+    <string name="loading">Loading...</string>
+    <string name="finish">Finish</string>
+    <string name="start">Start</string>
+    <string name="assignment_or_attendance">Attendance or assignment</string>
+
+    <string name="subject">Subject</string>
+    <string name="assignment_number">Assignment Number</string>
+    <string name="loop_scanning">Loop Scanning</string>
+    <string name="assignment_grade">Assignment Grade</string>
+    <string name="history">History</string>
+    <string name="export">Export</string>
+    <string name="delete_all">Delete All</string>
+    <string name="process_all">Process All</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="delete">Delete</string>
+    <string name="grade">Grade</string>
+    <string name="assign_num">Assign Num</string>
+    <string name="attend_assign">Attend/Assign</string>
+    <string name="qr_data">Qr data</string>
+    <string name="week">week</string>
 </resources>

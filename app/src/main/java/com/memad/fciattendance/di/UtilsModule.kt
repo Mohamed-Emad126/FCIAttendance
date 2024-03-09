@@ -30,7 +30,7 @@ class UtilsModule {
 
         return EncryptedSharedPreferences.create(
             context,
-            Constants.appPreferences,
+            Constants.APP_PREFERENCES,
             mainKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM

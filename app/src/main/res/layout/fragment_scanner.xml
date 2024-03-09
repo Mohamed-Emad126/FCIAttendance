@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollMode="never"
+    android:scrollbars="none"
+    tools:context=".ui.attendance.ScannerFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:animateLayoutChanges="true"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal|center_vertical|center"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/fci"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:focusableInTouchMode="true"
+            android:linksClickable="true"
+            android:text="@string/app_name"
+            android:textAllCaps="true"
+            android:textColor="@color/seed"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/user_account"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/user_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:focusableInTouchMode="true"
+            android:linksClickable="true"
+            android:text="@string/app_name"
+            android:textColor="@color/design_default_color_error"
+            app:layout_constraintBottom_toTopOf="@id/assign_or_attend_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_name" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/assign_or_attend_layout"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:focusableInTouchMode="true"
+            android:hint="@string/assignment_or_attendance"
+            app:boxStrokeErrorColor="@android:color/holo_red_dark"
+            app:errorEnabled="true"
+            app:errorIconTint="@android:color/holo_red_dark"
+            app:errorTextColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toTopOf="@id/assign_num_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_account">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/assign_or_atten_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:inputType="none"
+                android:saveEnabled="true"
+                app:simpleItemSelectedColor="@color/md_theme_light_primary"
+                app:simpleItems="@array/assign_or_attend_array" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/assign_num_layout"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:focusableInTouchMode="true"
+            android:hint="@string/assignment_number"
+            app:boxStrokeErrorColor="@android:color/holo_red_dark"
+            app:errorEnabled="true"
+            app:errorIconTint="@android:color/holo_red_dark"
+            app:errorTextColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toTopOf="@id/assign_grade_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assign_or_attend_layout">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/assign_num_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:inputType="none"
+                android:saveEnabled="true"
+                app:simpleItemSelectedColor="@color/md_theme_light_primary"
+                app:simpleItems="@array/assign_num_array" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/assign_grade_layout"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:focusableInTouchMode="true"
+            android:hint="@string/assignment_grade"
+            app:boxStrokeErrorColor="@android:color/holo_red_dark"
+            app:errorEnabled="true"
+            app:errorIconTint="@android:color/holo_red_dark"
+            app:errorTextColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toTopOf="@id/subject_text_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assign_num_layout">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/assign_grade_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:inputType="none"
+                android:saveEnabled="true"
+                app:simpleItemSelectedColor="@color/md_theme_light_primary"
+                app:simpleItems="@array/assign_num_array" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/subject_text_layout"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:focusableInTouchMode="true"
+            android:hint="@string/subject"
+            app:boxStrokeErrorColor="@android:color/holo_red_dark"
+            app:errorEnabled="true"
+            app:errorIconTint="@android:color/holo_red_dark"
+            app:errorTextColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toTopOf="@+id/loop_scanning"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/assign_grade_layout">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/subject_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:inputType="none"
+                android:saveEnabled="true"
+                app:simpleItemSelectedColor="@color/md_theme_light_primary"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/loop_scanning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/loop_scanning"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/button_login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subject_text_layout"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
+            android:text="@string/start"
+            app:layout_constraintBottom_toTopOf="@id/button_history"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loop_scanning" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_history"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="@string/history"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_login" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

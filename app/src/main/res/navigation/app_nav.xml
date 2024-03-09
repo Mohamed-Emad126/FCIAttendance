@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.memad.fciattendance.ui.login.loginui.LoginFragment"
+        android:name="com.memad.fciattendance.ui.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -21,25 +21,22 @@
             app:popExitAnim="@anim/anim_slide_out_right"
             />
         <action
-            android:id="@+id/action_loginFragment_to_attendanceActivity"
-            app:destination="@id/attendanceActivity"
+            android:id="@+id/action_loginFragment_to_attendance_nav"
+            app:destination="@id/attendance_nav"
             app:popUpTo="@id/app_nav"
             app:popUpToInclusive="true"/>
     </fragment>
-    <activity
-        android:id="@+id/attendanceActivity"
-        android:name="com.memad.fciattendance.ui.attendance.AttendanceActivity"
-        android:label="activity_attendance"
-        tools:layout="@layout/activity_attendance" />
     <fragment
         android:id="@+id/subjectsFragment"
-        android:name="com.memad.fciattendance.ui.login.subjects.SubjectsFragment"
+        android:name="com.memad.fciattendance.ui.subjects.SubjectsFragment"
         android:label="fragment_subjects"
         tools:layout="@layout/fragment_subjects" >
         <action
-            android:id="@+id/action_subjectsFragment_to_attendanceActivity"
-            app:destination="@id/attendanceActivity"
+            android:id="@+id/action_subjectsFragment_to_attendance_nav"
+            app:destination="@id/attendance_nav"
             app:popUpTo="@id/app_nav"
             app:popUpToInclusive="true"/>
     </fragment>
+
+    <include app:graph="@navigation/attendance_nav" />
 </navigation>
