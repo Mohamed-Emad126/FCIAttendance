@@ -6,29 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".ui.history.HistoryFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/history_appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="4dp"
-        app:layout_constraintBottom_toTopOf="@id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/history_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false"
             android:paddingStart="8dp"
+            android:id="@+id/history_appbar"
+            app:elevation="4dp"
+            app:layout_constraintBottom_toTopOf="@id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:paddingEnd="8dp"
+            android:layout_marginTop="16dp"
             app:contentInsetStartWithNavigation="0dp"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:title="History"
             app:titleMarginEnd="16dp"
             app:titleMarginStart="16dp" />
-    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout"

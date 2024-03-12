@@ -29,6 +29,8 @@ import com.memad.fciattendance.utils.SharedPreferencesHelper
 import com.memad.fciattendance.utils.Status
 import com.memad.fciattendance.utils.createDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -129,6 +131,9 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+        loginViewModel.authExceptionFlow.onEach { intent ->
+            startForResult.launch(intent)
+        }.launchIn(lifecycleScope)
     }
 
     private fun saveResultsToSharedPref(data: List<String>?) {

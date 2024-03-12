@@ -10,8 +10,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -27,6 +30,8 @@ import com.google.gson.Gson
 import com.memad.fciattendance.data.HistoryEntity
 import com.memad.fciattendance.databinding.FragmentHistoryBinding
 import com.memad.fciattendance.databinding.ProgressDialogBinding
+import com.memad.fciattendance.utils.Constants
+import com.memad.fciattendance.utils.SharedPreferencesHelper
 import com.memad.fciattendance.utils.createDialog
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.FileOutputStream
@@ -44,6 +49,8 @@ class HistoryFragment : Fragment(), HistoryViewAdapter.OnItemClickListener {
     private var baseDocumentTreeUri: Uri? = null
     private lateinit var dialogBinding: ProgressDialogBinding
     private lateinit var dialog: Dialog
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
 
     @Inject
     lateinit var historyViewAdapter: HistoryViewAdapter
@@ -74,9 +81,30 @@ class HistoryFragment : Fragment(), HistoryViewAdapter.OnItemClickListener {
         binding.buttonProcessAll.setOnClickListener { processAll() }
         binding.buttonExport.setOnClickListener { exportHistory() }
         binding.buttonClear.setOnClickListener { historyViewModel.deleteAllHistory() }
-        binding.historyToolbar.setNavigationOnClickListener {
+        binding.historyAppbar.setNavigationOnClickListener {
             binding.root.findNavController().navigateUp()
         }
+    }
+    private fun checkVerified(): Boolean{
+        return if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED).not()) {
+            disableUI()
+            false
+        } else {
+            enableUI()
+            true
+        }
+    }
+
+    private fun enableUI() {
+        binding.buttonProcessAll.isEnabled = true
+        binding.buttonExport.isEnabled = true
+        binding.buttonClear.isEnabled = true
+    }
+
+    private fun disableUI() {
+        binding.buttonProcessAll.isEnabled = false
+        binding.buttonExport.isEnabled = false
+        binding.buttonClear.isEnabled = false
     }
 
     private fun observeLiveData() {
@@ -87,6 +115,10 @@ class HistoryFragment : Fragment(), HistoryViewAdapter.OnItemClickListener {
     }
 
     private fun processAll() {
+        if (!checkVerified()) {
+            Toast.makeText(requireContext(), "You are not authorized to use this feature", Toast.LENGTH_SHORT).show()
+            return
+        }
         dialog.show()
         val history = historyViewModel.history.value
         if (history.isNullOrEmpty()) {

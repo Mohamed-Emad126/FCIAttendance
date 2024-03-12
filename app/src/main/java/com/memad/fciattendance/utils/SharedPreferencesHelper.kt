@@ -40,6 +40,13 @@ class SharedPreferencesHelper @Inject constructor(
         return sharedPref.getBoolean(key, false)
     }
 
+    fun saveBoolean(key: String, value: Boolean) {
+        with(sharedPref.edit()) {
+            putBoolean(key, value)
+            apply()
+        }
+    }
+
     fun readStringSet(key: String): MutableSet<String>? {
         return sharedPref.getStringSet(key, mutableSetOf())
     }

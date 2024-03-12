@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -90,9 +91,7 @@ class ScannerFragment : Fragment() {
         setupLoginButton()
         setupHistoryButton()
         setupSelectionLogic()
-        if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED)) {
-            disableUI()
-        }
+        checkVerified()
     }
 
     private fun disableUI() {
@@ -102,7 +101,17 @@ class ScannerFragment : Fragment() {
         binding.assignGradeText.isEnabled = false
         binding.buttonLogin.isEnabled = false
         binding.loopScanning.isEnabled = false
+        binding.buttonHistory.isEnabled = false
         showToast("You are not authorized to scan yet")
+    }
+
+    private fun enableUI() {
+        binding.subjectEditText.isEnabled = true
+        binding.assignOrAttenText.isEnabled = true
+        binding.assignNumText.isEnabled = true
+        binding.assignGradeText.isEnabled = true
+        binding.loopScanning.isEnabled = true
+        binding.buttonHistory.isEnabled = true
     }
 
     private fun setupTextChangeListeners() {
@@ -110,7 +119,13 @@ class ScannerFragment : Fragment() {
             binding.buttonLogin.isEnabled = true
         }
         binding.buttonLogin.isEnabled = binding.subjectEditText.text.isNotEmpty()
-
+        binding.imageView.setOnClickListener {
+            setupUI()
+            loginViewModel.checkExistingUser(
+                GoogleSignIn.getLastSignedInAccount(requireContext())?.email ?: "",
+                credential!!
+            )
+        }
     }
 
     private fun setupItemClickListener() {
@@ -134,7 +149,7 @@ class ScannerFragment : Fragment() {
 
     private fun setupLoginButton() {
         binding.buttonLogin.setOnClickListener {
-            if (validateUI()) {
+            if (validateUI() && checkVerified()) {
                 handleLogin()
                 startScan()
             }
@@ -216,10 +231,18 @@ class ScannerFragment : Fragment() {
             binding.assignNumText.error = "Please enter the assignment number"
             return false
         }
-        if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED)) {
-            disableUI()
-        }
+        checkVerified()
         return true
+    }
+
+    private fun checkVerified(): Boolean{
+        return if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED).not()) {
+            disableUI()
+            false
+        } else {
+            enableUI()
+            true
+        }
     }
 
     private fun startScan() {
@@ -253,7 +276,7 @@ class ScannerFragment : Fragment() {
                 NetworkStatus.Disconnected
             )
         ) {
-            showToast("No Internet Connection\nData saved locally in History")
+            showToast("No Internet Connection,saved locally\n${dataParts.reversed()[0]}")
             mainViewModel.insertHistory(
                 dataParts.reversed().joinToString(": "),
                 subjectSheetName,

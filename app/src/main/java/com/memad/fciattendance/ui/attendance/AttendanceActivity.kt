@@ -2,6 +2,7 @@ package com.memad.fciattendance.ui.attendance
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import com.memad.fciattendance.R
 import com.memad.fciattendance.di.annotations.Scopes
 import com.memad.fciattendance.ui.login.LoginActivity
 import com.memad.fciattendance.ui.login.LoginViewModel
+import com.memad.fciattendance.utils.Constants
+import com.memad.fciattendance.utils.SharedPreferencesHelper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,6 +25,9 @@ class AttendanceActivity : AppCompatActivity() {
     @Scopes
     @Inject
     lateinit var scopes: List<String>
+
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
