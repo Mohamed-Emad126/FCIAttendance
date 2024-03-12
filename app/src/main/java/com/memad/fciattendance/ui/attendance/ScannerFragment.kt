@@ -20,14 +20,15 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.memad.fciattendance.R
 import com.memad.fciattendance.databinding.FragmentScannerBinding
+import com.memad.fciattendance.di.annotations.Scopes
 import com.memad.fciattendance.ui.login.LoginActivity
+import com.memad.fciattendance.ui.login.LoginViewModel
 import com.memad.fciattendance.utils.AccessNative
 import com.memad.fciattendance.utils.Constants
 import com.memad.fciattendance.utils.NetworkStatus
@@ -48,8 +49,11 @@ class ScannerFragment : Fragment() {
     private var currentToast: Toast? = null
     private var scanner: GmsBarcodeScanner? = null
     private var credential: GoogleAccountCredential? = null
-    private val scopes =
-        listOf(SheetsScopes.SPREADSHEETS, SheetsScopes.DRIVE_FILE, SheetsScopes.DRIVE)
+    private val loginViewModel: LoginViewModel by viewModels()
+
+    @Scopes
+    @Inject
+    lateinit var scopes: List<String>
 
     @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
@@ -63,6 +67,12 @@ class ScannerFragment : Fragment() {
     ): View {
         _binding = FragmentScannerBinding.inflate(inflater, container, false)
         scanner = GmsBarcodeScanning.getClient(requireContext(), options)
+        val signedInAccount = GoogleSignIn.getLastSignedInAccount(requireContext())
+        val account = signedInAccount?.account
+        val credential = GoogleAccountCredential.usingOAuth2(requireContext(), scopes)
+        credential?.setSelectedAccountName(account?.name)
+        loginViewModel.checkExistingUser(account?.name!!, credential!!)
+
         setupUI()
         checkAvailableAccount()
         observeFlow()
@@ -205,6 +215,9 @@ class ScannerFragment : Fragment() {
         if (binding.assignOrAttenText.text.toString() == "Assignment" && binding.assignNumText.text.isEmpty()) {
             binding.assignNumText.error = "Please enter the assignment number"
             return false
+        }
+        if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED)) {
+            disableUI()
         }
         return true
     }
