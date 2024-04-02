@@ -10,14 +10,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.work.BackoffPolicy
 import androidx.work.Data
@@ -30,10 +28,9 @@ import com.google.gson.Gson
 import com.memad.fciattendance.data.HistoryEntity
 import com.memad.fciattendance.databinding.FragmentHistoryBinding
 import com.memad.fciattendance.databinding.ProgressDialogBinding
-import com.memad.fciattendance.utils.Constants
-import com.memad.fciattendance.utils.SharedPreferencesHelper
 import com.memad.fciattendance.utils.createDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.io.IOException
 import java.time.Duration
@@ -49,8 +46,6 @@ class HistoryFragment : Fragment(), HistoryViewAdapter.OnItemClickListener {
     private var baseDocumentTreeUri: Uri? = null
     private lateinit var dialogBinding: ProgressDialogBinding
     private lateinit var dialog: Dialog
-    @Inject
-    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
 
     @Inject
     lateinit var historyViewAdapter: HistoryViewAdapter
@@ -85,67 +80,61 @@ class HistoryFragment : Fragment(), HistoryViewAdapter.OnItemClickListener {
             binding.root.findNavController().navigateUp()
         }
     }
-    private fun checkVerified(): Boolean{
-        return if (sharedPreferencesHelper.readBoolean(Constants.IS_VERIFIED).not()) {
-            disableUI()
-            false
-        } else {
-            enableUI()
-            true
-        }
-    }
-
-    private fun enableUI() {
-        binding.buttonProcessAll.isEnabled = true
-        binding.buttonExport.isEnabled = true
-        binding.buttonClear.isEnabled = true
-    }
-
-    private fun disableUI() {
-        binding.buttonProcessAll.isEnabled = false
-        binding.buttonExport.isEnabled = false
-        binding.buttonClear.isEnabled = false
-    }
 
     private fun observeLiveData() {
         historyViewModel.history.observe(viewLifecycleOwner) {
             historyViewAdapter.setHistoryList(it)
-            dialogBinding.progressPercent.text = "0 /${it.size}"
         }
     }
 
     private fun processAll() {
-        if (!checkVerified()) {
-            Toast.makeText(requireContext(), "You are not authorized to use this feature", Toast.LENGTH_SHORT).show()
-            return
-        }
         dialog.show()
         val history = historyViewModel.history.value
         if (history.isNullOrEmpty()) {
             Snackbar.make(requireView(), "No history to process", Snackbar.LENGTH_SHORT).show()
             dialog.dismiss()
         } else {
-            enqueueWorkRequests(history)
+            viewLifecycleOwner.lifecycleScope.launch {
+                enqueueWorkRequests(history)
+            }
         }
     }
 
-    private fun enqueueWorkRequests(history: List<HistoryEntity>) {
+    private suspend fun enqueueWorkRequests(history: List<HistoryEntity>) {
+        val batchSize = 50
         val workManager = WorkManager.getInstance(requireContext())
-        var continuation = workManager.beginWith(createWorkRequest(history[0]))
-        for (i in 1 until history.size) {
-            continuation = continuation.then(createWorkRequest(history[i]))
+        val batches = history.chunked(batchSize)
+
+        batches.forEach { batch ->
+            dialog.show()
+            dialogBinding.progressPercent.text =
+                "0 /${batch.size} \n batch: ${batches.indexOf(batch) + 1} / ${batches.size}"
+            var continuation = workManager.beginWith(createWorkRequest(batch[0]))
+            for (i in 1 until batch.size) {
+                continuation = continuation.then(createWorkRequest(batch[i]))
+            }
+            val workInfos = continuation.workInfos
+            continuation.enqueue()
+            observeWorkInfos(continuation, batch.size, batches.indexOf(batch), batches.size)
+            workInfos.get()
+            // sleep for 60 second to avoid rate limit
+            kotlinx.coroutines.delay(60000)
         }
-        continuation.enqueue()
-        observeWorkInfos(continuation)
+        dialog.dismiss()
     }
 
-    private fun observeWorkInfos(continuation: WorkContinuation) {
+    private fun observeWorkInfos(
+        continuation: WorkContinuation,
+        size: Int,
+        index: Int,
+        total: Int
+    ) {
         continuation.workInfosLiveData.observe(viewLifecycleOwner) { workInfos ->
             val progress = workInfos.filter { it.state.isFinished }.size
             dialogBinding.progressPercent.text =
-                "$progress /${historyViewModel.history.value?.size}"
+                "$progress /$size \n batch: ${index + 1} / $total"
             dialogBinding.progressBar.progress = progress
-            if (workInfos.all { it.state.isFinished }) dialog.dismiss()
+//            if (workInfos.all { it.state.isFinished }) dialog.dismiss()
         }
     }
 

@@ -19,7 +19,6 @@ import com.google.gson.Gson
 import com.memad.fciattendance.data.HistoryEntity
 import com.memad.fciattendance.utils.Constants
 import com.memad.fciattendance.utils.SharedPreferencesHelper
-import com.memad.fciattendance.utils.weekNum
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -66,7 +65,8 @@ class ProcessAllWorker @AssistedInject constructor(
             history.attendOrAssign,
             history.assignNumber,
             history.subject,
-            history.grade
+            history.grade,
+            history.week
         )
     }
 
@@ -78,10 +78,11 @@ class ProcessAllWorker @AssistedInject constructor(
         assnOrAttend: String,
         assignNum: String,
         subject: String,
-        assignGrade: String = "1"
+        assignGrade: String = "1",
+        week: String
     ): Result {
         val isDoctor = sharedPreferencesHelper.readBoolean(Constants.IS_DOCTOR)
-        val range = calculateRange(assnOrAttend, assignNum, isDoctor)
+        val range = calculateRange(assnOrAttend, assignNum, isDoctor, week)
         val whereToPutData = "$subject!${range}${decryptWithAES[1]}"
         val spreadsheet = getSpreadSheet(credential)
 
@@ -115,13 +116,18 @@ class ProcessAllWorker @AssistedInject constructor(
         return service.spreadsheets()
     }
 
-    private fun calculateRange(assnOrAttend: String, assignNum: String, isDoctor: Boolean): String {
+    private fun calculateRange(
+        assnOrAttend: String,
+        assignNum: String,
+        isDoctor: Boolean,
+        week: String
+    ): String {
         var range = 2
         range += if (assnOrAttend == "Attendance") {
             if (isDoctor) {
-                (weekNum().toInt() * 2) + 2
+                (week.toInt() * 2) + 2
             } else {
-                (weekNum().toInt() * 2) + 1
+                (week.toInt() * 2) + 1
             }
         } else {
             21 + (assignNum.toInt() - 1)
@@ -130,13 +136,13 @@ class ProcessAllWorker @AssistedInject constructor(
     }
 
     private fun getExcelColumnName(columnNumber: Int): String {
-        var columnNumber = columnNumber
+        var colNumber = columnNumber
         val stringBuilder = StringBuilder()
 
-        while (columnNumber > 0) {
-            val mod = (columnNumber - 1) % 26
+        while (colNumber > 0) {
+            val mod = (colNumber - 1) % 26
             stringBuilder.insert(0, (mod + 'A'.code).toChar())
-            columnNumber = (columnNumber - mod) / 26
+            colNumber = (colNumber - mod) / 26
         }
 
         return stringBuilder.toString()
