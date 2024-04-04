@@ -10,6 +10,12 @@ FCI Attendance is an Android application designed to simplify the process of stu
 - Persist data across app launches.
 - Asynchronous data handling with Kotlin Coroutines.
 - Native-level performance with Android NDK.
+
+
+
+https://github.com/Mohamed-Emad126/FCIAttendance/assets/52430634/747537a1-9c7c-49b8-b01e-27d3d72f0f0a
+
+
   
 ## Setup
 
